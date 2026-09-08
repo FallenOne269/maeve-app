@@ -32,4 +32,5 @@ class ErrorBoundary extends Component<Props, State> {
   }
 }
 
+// Trigger a fresh production deployment after the build fix.
 export default ErrorBoundary;
