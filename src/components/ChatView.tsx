@@ -9,11 +9,38 @@ import type { ChatMessage, FileAttachment, RFAIMetrics, ContentBlock, ChatSessio
 // Helpers
 // ---------------------------------------------------------------------------
 
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+
+// The model's metrics JSON is not always well-typed (e.g. arrays sent as
+// numbers, fields omitted) — normalize so rendering can never crash.
+function normalizeMetrics(raw: unknown): RFAIMetrics | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as Record<string, unknown>;
+  const num = (v: unknown, d: number) => (typeof v === "number" && Number.isFinite(v) ? v : d);
+  const strArr = (v: unknown): string[] => {
+    if (Array.isArray(v)) return v.map(String);
+    if (typeof v === "string" && v) return [v];
+    return [];
+  };
+  return {
+    resonance: clamp01(num(r.resonance, 0.5)),
+    recursion_depth: Math.max(1, Math.round(num(r.recursion_depth, 2))),
+    coherence: clamp01(num(r.coherence, 0.5)),
+    ignition: r.ignition === true || (typeof r.ignition === "number" && r.ignition > 0.5),
+    fractal_branches: strArr(r.fractal_branches),
+    meta_reflection: typeof r.meta_reflection === "string" ? r.meta_reflection : "",
+    self_question: typeof r.self_question === "string" ? r.self_question : "",
+    tensions: strArr(r.tensions),
+    confidence: clamp01(num(r.confidence, 0.5)),
+    dominant_lens: typeof r.dominant_lens === "string" ? r.dominant_lens : "analytical",
+  };
+}
+
 function extractMetrics(text: string): RFAIMetrics | null {
   const match = text.match(/```json\s*([\s\S]*?)```/);
   if (!match) return null;
   try {
-    return JSON.parse(match[1]) as RFAIMetrics;
+    return normalizeMetrics(JSON.parse(match[1]));
   } catch {
     return null;
   }
@@ -137,7 +164,7 @@ export default function ChatView({ session, onMessagesChange, onBack }: ChatView
   const [attachments, setAttachments] = useState<FileAttachment[]>([]);
   const [loading, setLoading] = useState(false);
   const [latestMetrics, setLatestMetrics] = useState<RFAIMetrics | null>(
-    () => [...session.messages].reverse().find((m) => m.metrics)?.metrics ?? null
+    () => normalizeMetrics([...session.messages].reverse().find((m) => m.metrics)?.metrics)
   );
   const [error, setError] = useState<string | null>(null);
 
