@@ -68,7 +68,7 @@ function FractalCanvas({ metrics, size = 320 }: Props) {
         const r = maxR * ((i + 1) / 9) * (0.5 + resonance * 0.5);
         const w = Math.sin(t * 1.5 + i * 0.7) * (2 + resonance * 3);
         ctx.beginPath();
-        ctx.arc(cx, cy, r + w, 0, Math.PI * 2);
+        ctx.arc(cx, cy, Math.max(0, r + w), 0, Math.PI * 2);
         ctx.strokeStyle = `rgba(212,175,55,${Math.max(0.02, 0.05 + resonance * 0.14 - i * 0.01)})`;
         ctx.lineWidth = ignition ? 1.5 : 0.6;
         ctx.stroke();
