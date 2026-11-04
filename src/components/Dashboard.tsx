@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import FractalCanvas from "@/components/FractalCanvas";
 import type { ChatSession } from "@/types";
@@ -45,7 +46,8 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ sessions, onOpen, onNew, onDelete }: DashboardProps) {
-  const now = Date.now();
+  // Read the clock once per mount, not on every render (react-hooks/purity).
+  const [now] = useState(() => Date.now());
   const activeCount = sessions.filter(
     (s) => s.messages.length > 0 && now - s.lastActivity < ACTIVE_WINDOW_MS
   ).length;
