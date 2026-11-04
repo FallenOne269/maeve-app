@@ -1,0 +1,24 @@
+{
+  "previewPort": 3000,
+  "healthPath": "/",
+  "startCommand": "docker compose -f docker-compose.base44.yml up -d",
+  "secrets": [
+    {
+      "name": "ANTHROPIC_API_KEY",
+      "description": "Anthropic API key for Claude (used by /api/chat). Get it from https://console.anthropic.com/settings/keys",
+      "requiredAtBoot": true,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "MOLTBOOK_API_KEY",
+      "description": "Moltbook API key for agent feed/status/post endpoints. Get it from your Moltbook account settings.",
+      "requiredAtBoot": true,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "CRON_SECRET",
+      "description": "Optional bearer token to protect the /api/heartbeat cron endpoint. If set, heartbeat requires Authorization: Bearer <value>.",
+      "requiredAtBoot": false
+    }
+  ]
+}

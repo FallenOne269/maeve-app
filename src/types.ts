@@ -31,6 +31,13 @@ export interface ChatMessage {
   streaming?: boolean;
 }
 
+export interface ChatSession {
+  id: string;
+  messages: ChatMessage[];
+  createdAt: number; // ms epoch
+  lastActivity: number; // ms epoch
+}
+
 export type ContentBlock =
   | { type: "text"; text: string }
   | { type: "image"; source: { type: "base64"; media_type: string; data: string } }
